@@ -54,6 +54,8 @@ jobs:
               with:
                   name: dist-files
                   path: dist
-
+            
+            - name: Output Files
+              run: ls dist
             - name: Deploy
               run: echo "Deploying to production..."
