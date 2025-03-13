@@ -6,77 +6,66 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Get Code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v3  # Checks out the repository code
 
             - name: Cache Dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v3  # Caches npm dependencies
               with:
                 path: ~/.npm
                 key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
 
-            # - name: Setup Node.js
-            #   uses: actions/setup-node@v3
-            #   with:
-            #     node-version: 18
-            #     cache: 'npm' # Caches dependencies
-
             - name: Install Dependencies
-              run: npm ci
+              run: npm ci  # Installs dependencies
 
             - name: Run Tests
-              run: npm test
+              run: npm test  # Runs Jest tests
 
     build:
-        needs: test
+        needs: test  # Runs only if the test job completes successfully
         runs-on: ubuntu-latest
         outputs:
             script-file: ${{ steps.publish.outputs.script-file }}
         steps:
             - name: Get Code
-              uses: actions/checkout@v3
-
-            # - name: Setup Node.js
-            #   uses: actions/setup-node@v3
-            #   with:
-            #     node-version: 18
-            #     cache: 'npm'
+              uses: actions/checkout@v3  # Checks out the repository code
 
             - name: Cache Dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v3  # Caches npm dependencies
               with:
                 path: ~/.npm
                 key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
 
             - name: Install Dependencies
-              run: npm ci
+              run: npm ci  # Installs dependencies
 
             - name: Build
-              run: npm run build
+              run: npm run build  # Builds the application
             
             - name: Published JS File Name
               id: publish
-              run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+              run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'  # Extracts script file name
 
             - name: Upload Build Artifacts
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v4  # Uploads build artifacts
               with:
                   name: dist-files
                   path: dist
 
     deploy:
-        needs: build
+        needs: build  # Runs only if the build job completes successfully
         runs-on: ubuntu-latest
         steps:
             - name: Download Build Artifacts
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@v4  # Downloads build artifacts
               with:
                   name: dist-files
                   path: dist
             
             - name: Output Files
-              run: ls dist
+              run: ls dist  # Lists files in the dist directory
 
             - name: Output File Name
-              run: echo ${{ needs.build.outputs.script-file}}
+              run: echo ${{ needs.build.outputs.script-file}}  # Prints the script file name
+            
             - name: Deploy
-              run: echo "Deploying to production..."
+              run: echo "Deploying to production..."  # Simulates deployment
